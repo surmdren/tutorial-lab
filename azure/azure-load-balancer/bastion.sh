@@ -16,10 +16,10 @@ az vm availability-set create \
   -l japaneast \
   -g $group
 
-for NUM in 1 2
+for NUM in 1
 do
   az vm create \
-    -n vm-eu-0$NUM \
+    -n bastion-0$NUM \
     -g $group \
     -l japaneast \
     --size Standard_B1s \
@@ -28,24 +28,16 @@ do
     --generate-ssh-keys \
     --vnet-name vm-vnet \
     --subnet subnet \
-    --public-ip-address "" \
+    --public-ip-address-allocation dynamic \
     --availability-set vm-as \
     --nsg vm-nsg
 done
 
-for NUM in 1 2
+for NUM in 1
 do
-  az vm open-port -g $group --name vm-eu-0$NUM --port 80
+  az vm open-port -g $group --name bastion-0$NUM --port 22
 done
 
-for NUM in 1 2
-do
-    az vm run-command invoke \
-        -g $group \
-        -n vm-eu-0$NUM \
-        --command-id RunShellScript \
-        --scripts "sudo apt-get update && sudo apt-get install -y nginx"
-done
 
 
 
